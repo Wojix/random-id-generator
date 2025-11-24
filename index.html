@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ユニークID表示</title>
+</head>
+<body>
+  <div id="currentId">(生成中...)</div>
+  <script>
+    const STORAGE_KEY = 'site_uid';
+    const ID_LENGTH = 20;
+
+    function generateId(len = ID_LENGTH){
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      const bytes = new Uint8Array(len);
+      crypto.getRandomValues(bytes);
+      let out = '';
+      for (let i = 0; i < len; i++){
+        out += chars[bytes[i] % chars.length];
+      }
+      return out;
+    }
+
+    function saveLocalId(id){
+      try{ localStorage.setItem(STORAGE_KEY, id); }catch(e){ console.error(e); }
+    }
+
+    function getLocalId(){
+      try{ return localStorage.getItem(STORAGE_KEY); }catch(e){ return null; }
+    }
+
+    function init(){
+      let id = getLocalId();
+      if (!id){
+        id = generateId();
+        saveLocalId(id);
+      }
+      document.getElementById('currentId').textContent = id;
+    }
+
+    init();
+  </script>
+</body>
+</html>
